@@ -1,5 +1,5 @@
 from crewai import Agent, LLM
-from tools import web_search, get_mock_analytics, save_to_markdown
+from tools import web_search, analyze_campaign_performance, save_to_markdown
 import os
 from dotenv import load_dotenv
 import crewai.llm
@@ -38,8 +38,8 @@ def get_llm():
 def get_market_researcher():
     return Agent(
         role="Market Researcher",
-        goal="Discover current marketing trends, customer sentiment, and emerging topics in the {industry} industry.",
-        backstory="You are an expert market researcher with a keen eye for spotting trends before they go mainstream. You excel at finding valuable insights from across the web.",
+        goal="Discover current marketing trends, customer sentiment, and emerging topics relevant to the given industry and campaign focus. Use web search to find real, up-to-date data.",
+        backstory="You are an expert market researcher with a keen eye for spotting trends before they go mainstream. You excel at finding valuable insights from across the web. You always search for real data and never make up statistics.",
         tools=[web_search],
         llm=get_llm(),
         verbose=True,
@@ -49,8 +49,8 @@ def get_market_researcher():
 def get_competitor_analyst():
     return Agent(
         role="Competitor Analyst",
-        goal="Analyze key competitors in the {industry} market, identifying their strengths, weaknesses, and market positioning.",
-        backstory="You are a ruthless competitor analyst. You know exactly where to look to find what the competition is doing and how to exploit their weaknesses.",
+        goal="Analyze key competitors in the given industry, identifying their strengths, weaknesses, and market positioning. Use web search to find real competitor data.",
+        backstory="You are a ruthless competitor analyst. You know exactly where to look to find what the competition is doing and how to exploit their weaknesses. You always search the web for real competitor information.",
         tools=[web_search],
         llm=get_llm(),
         verbose=True,
@@ -80,9 +80,9 @@ def get_content_strategist():
 def get_analytics_specialist():
     return Agent(
         role="Analytics Specialist",
-        goal="Review performance metrics of active/past campaigns to provide data insights.",
-        backstory="You are a data nerd. Numbers speak to you. You can look at a dashboard and instantly know what's working and what's not.",
-        tools=[get_mock_analytics],
+        goal="Research real-world marketing benchmarks and best practices relevant to the given campaign. Use the Campaign Performance Analyzer tool to find industry-specific data and optimization insights.",
+        backstory="You are a data-driven marketing analyst. You research industry benchmarks, best practices, and real-world campaign performance data to provide actionable insights. You always use your tools to find real data.",
+        tools=[analyze_campaign_performance, web_search],
         llm=get_llm(),
         verbose=True,
         allow_delegation=False

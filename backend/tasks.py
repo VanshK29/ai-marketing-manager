@@ -48,15 +48,16 @@ def create_optimization_tasks(campaign_name: str):
     advisor = get_optimisation_advisor()
 
     task1 = Task(
-        description=f"Fetch and review the performance metrics for the '{campaign_name}' campaign using the mock analytics tool.",
-        expected_output="A report detailing the campaign's Click-Through Rate, Conversion Rate, and ROI.",
+        description=f"Research real-world marketing benchmarks and best practices for a campaign like '{campaign_name}'. Use the Campaign Performance Analyzer tool to search for industry-specific data, then provide a detailed analysis of what metrics to expect and what optimization opportunities exist.",
+        expected_output="A data-driven report with real industry benchmarks, expected KPIs (CTR, conversion rate, ROI), and key performance insights specific to this type of campaign.",
         agent=analytics
     )
 
     task2 = Task(
-        description="Analyze the performance report and suggest actionable improvements to optimize the campaign's ROI.",
-        expected_output="A strategic optimization document with specific recommendations.",
+        description=f"Based on the analytics report for the '{campaign_name}' campaign, suggest specific, actionable improvements to optimize the campaign's performance and ROI. Search the web for proven optimization strategies if needed.",
+        expected_output="A strategic optimization document with specific, actionable recommendations organized by priority (short-term, mid-term, long-term).",
         agent=advisor
     )
 
     return [task1, task2]
+
