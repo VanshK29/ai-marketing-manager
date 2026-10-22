@@ -35,9 +35,10 @@ def _patched_litellm_completion(*args, **kwargs):
             return _orig_litellm_completion(*args, **kwargs)
         except Exception as e:
             err_str = str(e)
-            if "rate_limit_exceeded" in err_str or "429" in err_str or "RateLimitError" in err_str:
-                print(f"Rate limit hit. Sleeping 12s before retry (Attempt {attempt+1}/{max_retries})...")
-                time.sleep(12)
+            if "rate_limit_exceeded" in err_str or "429" in err_str or "RateLimitError" in err_str or "503" in err_str or "UNAVAILABLE" in err_str:
+                wait_time = 3 if ("503" in err_str or "UNAVAILABLE" in err_str) else 10
+                print(f"Transient error ({err_str[:60]}...). Sleeping {wait_time}s before retry ({attempt+1}/{max_retries})...")
+                time.sleep(wait_time)
             else:
                 raise e
     return _orig_litellm_completion(*args, **kwargs)
@@ -49,7 +50,7 @@ load_dotenv()
 def get_llm():
     gemini_api_key = os.getenv("GEMINI_API_KEY")
     if gemini_api_key and gemini_api_key != "your_gemini_api_key_here":
-        return LLM(model="gemini/gemini-flash-latest", api_key=gemini_api_key)
+        return LLM(model="gemini/gemini-3.5-flash", api_key=gemini_api_key)
     groq_api_key = os.getenv("GROQ_API_KEY")
     if groq_api_key and groq_api_key != "your_groq_api_key_here":
         return LLM(model="groq/openai/gpt-oss-20b", api_key=groq_api_key)
