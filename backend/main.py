@@ -1,8 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from crewai import Crew, Process
-from typing import Dict, Any
 import sys
 import io
 import json
@@ -10,8 +8,9 @@ import json
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
-from tasks import create_planning_tasks, create_content_tasks, create_optimization_tasks
 from agents import get_market_researcher, get_competitor_analyst, get_campaign_planner, get_content_strategist, get_analytics_specialist, get_optimisation_advisor
+from tasks import create_planning_tasks, create_content_tasks, create_optimization_tasks
+from crewai import Crew, Process
 
 app = FastAPI(title="AI Marketing Manager API")
 

@@ -6,16 +6,33 @@ import crewai.llm
 
 import time
 
-original_call = LLM.call
-def patched_call(self, messages, *args, **kwargs):
-    for m in messages:
-        if isinstance(m, dict) and 'cache_breakpoint' in m:
-            del m['cache_breakpoint']
-            
+import litellm
+import time
+
+_orig_litellm_completion = litellm.completion
+
+def _clean_messages(msgs):
+    if not msgs:
+        return msgs
+    for m in msgs:
+        if isinstance(m, dict):
+            m.pop('cache_breakpoint', None)
+        elif hasattr(m, 'cache_breakpoint'):
+            delattr(m, 'cache_breakpoint')
+    return msgs
+
+def _patched_litellm_completion(*args, **kwargs):
+    if 'messages' in kwargs:
+        _clean_messages(kwargs['messages'])
+    if len(args) > 1 and isinstance(args[1], list):
+        _clean_messages(args[1])
+    if kwargs.get('tool_choice') == 'required':
+        kwargs['tool_choice'] = 'auto'
+        
     max_retries = 5
     for attempt in range(max_retries):
         try:
-            return original_call(self, messages, *args, **kwargs)
+            return _orig_litellm_completion(*args, **kwargs)
         except Exception as e:
             err_str = str(e)
             if "rate_limit_exceeded" in err_str or "429" in err_str or "RateLimitError" in err_str:
@@ -23,17 +40,20 @@ def patched_call(self, messages, *args, **kwargs):
                 time.sleep(12)
             else:
                 raise e
-    return original_call(self, messages, *args, **kwargs)
+    return _orig_litellm_completion(*args, **kwargs)
 
-LLM.call = patched_call
+litellm.completion = _patched_litellm_completion
 
 load_dotenv()
 
 def get_llm():
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if gemini_api_key and gemini_api_key != "your_gemini_api_key_here":
+        return LLM(model="gemini/gemini-flash-latest", api_key=gemini_api_key)
     groq_api_key = os.getenv("GROQ_API_KEY")
-    if not groq_api_key or groq_api_key == "your_groq_api_key_here":
-        return None
-    return LLM(model="groq/llama-3.1-8b-instant", api_key=groq_api_key)
+    if groq_api_key and groq_api_key != "your_groq_api_key_here":
+        return LLM(model="groq/openai/gpt-oss-20b", api_key=groq_api_key)
+    return None
 
 def get_market_researcher():
     return Agent(
@@ -64,7 +84,7 @@ def get_campaign_planner():
         backstory="You are a seasoned Chief Marketing Officer. You take raw data and turn it into brilliant, actionable marketing campaigns that drive ROI.",
         llm=get_llm(),
         verbose=True,
-        allow_delegation=True
+        allow_delegation=False
     )
 
 def get_content_strategist():

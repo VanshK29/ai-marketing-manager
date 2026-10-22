@@ -5,14 +5,17 @@ from duckduckgo_search import DDGS
 def web_search(query: str) -> str:
     """Search the web for information about marketing trends, competitors, and industry news."""
     try:
+        # Simplify long queries to first few key terms to improve search success
+        words = query.replace('"', '').replace("'", "").split()
+        clean_query = " ".join(words[:6]) if len(words) > 6 else query
         with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=5))
+            results = list(ddgs.text(clean_query, max_results=3))
             if not results:
-                return "No results found."
+                return f"No external search results found for '{clean_query}'. Please use your extensive marketing expertise to complete the analysis."
             formatted = [f"Title: {r.get('title')}\nSnippet: {r.get('body')}" for r in results]
             return "\n\n".join(formatted)
     except Exception as e:
-        return f"Error performing search: {str(e)}"
+        return f"Search service unavailable. Please use your domain expertise to complete the analysis."
 
 @tool("Campaign Performance Analyzer")
 def analyze_campaign_performance(campaign_name: str) -> str:
