@@ -52,7 +52,15 @@ def generate_plan(request: PlanRequest):
         elif hasattr(final_task.output, 'pydantic') and final_task.output.pydantic:
             return final_task.output.pydantic.model_dump()
         else:
-            return {"raw_output": str(result)}
+            raw_text = str(result)
+            try:
+                import re
+                json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
+                if json_match:
+                    return json.loads(json_match.group())
+            except Exception:
+                pass
+            return {"raw_output": raw_text}
             
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -77,7 +85,15 @@ def generate_content(request: ContentRequest):
         elif hasattr(final_task.output, 'pydantic') and final_task.output.pydantic:
             return final_task.output.pydantic.model_dump()
         else:
-            return {"raw_output": str(result)}
+            raw_text = str(result)
+            try:
+                import re
+                json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
+                if json_match:
+                    return json.loads(json_match.group())
+            except Exception:
+                pass
+            return {"raw_output": raw_text}
             
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

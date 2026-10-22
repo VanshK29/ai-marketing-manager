@@ -59,22 +59,20 @@ def get_llm():
 def get_market_researcher():
     return Agent(
         role="Market Researcher",
-        goal="Discover current marketing trends, customer sentiment, and emerging topics relevant to the given industry and campaign focus. Use web search to find real, up-to-date data.",
-        backstory="You are an expert market researcher with a keen eye for spotting trends before they go mainstream. You excel at finding valuable insights from across the web. You always search for real data and never make up statistics.",
-        tools=[web_search],
+        goal="Discover current marketing trends, customer sentiment, and emerging topics relevant to the given industry and campaign focus. Provide deep, accurate market insights.",
+        backstory="You are an expert market researcher with a keen eye for spotting trends before they go mainstream. You excel at synthesizing valuable insights on market dynamics and consumer pain points.",
         llm=get_llm(),
-        verbose=True,
+        verbose=False,
         allow_delegation=False
     )
 
 def get_competitor_analyst():
     return Agent(
         role="Competitor Analyst",
-        goal="Analyze key competitors in the given industry, identifying their strengths, weaknesses, and market positioning. Use web search to find real competitor data.",
-        backstory="You are a ruthless competitor analyst. You know exactly where to look to find what the competition is doing and how to exploit their weaknesses. You always search the web for real competitor information.",
-        tools=[web_search],
+        goal="Analyze key competitors in the given industry, identifying their strengths, weaknesses, and market positioning.",
+        backstory="You are a ruthless competitor analyst. You know exactly where to look to analyze competitor tactics and how to exploit their market gaps.",
         llm=get_llm(),
-        verbose=True,
+        verbose=False,
         allow_delegation=False
     )
 
@@ -84,7 +82,7 @@ def get_campaign_planner():
         goal="Synthesize research and competitor analysis into a cohesive marketing strategy, defining budget, timeline, and target audience.",
         backstory="You are a seasoned Chief Marketing Officer. You take raw data and turn it into brilliant, actionable marketing campaigns that drive ROI.",
         llm=get_llm(),
-        verbose=True,
+        verbose=False,
         allow_delegation=False
     )
 
@@ -94,18 +92,17 @@ def get_content_strategist():
         goal="Create detailed content plans, topics, formats, and drafts based on the campaign plan.",
         backstory="You are a creative genius. You know exactly what content formats work best on which channels and how to craft a message that resonates.",
         llm=get_llm(),
-        verbose=True,
+        verbose=False,
         allow_delegation=False
     )
 
 def get_analytics_specialist():
     return Agent(
         role="Analytics Specialist",
-        goal="Research real-world marketing benchmarks and best practices relevant to the given campaign. Use the Campaign Performance Analyzer tool to find industry-specific data and optimization insights.",
-        backstory="You are a data-driven marketing analyst. You research industry benchmarks, best practices, and real-world campaign performance data to provide actionable insights. You always use your tools to find real data.",
-        tools=[analyze_campaign_performance, web_search],
+        goal="Analyze real-world marketing benchmarks and best practices relevant to the given campaign to provide data-driven insights.",
+        backstory="You are a data-driven marketing analyst. You analyze industry benchmarks, best practices, and real-world campaign performance metrics to provide actionable insights.",
         llm=get_llm(),
-        verbose=True,
+        verbose=False,
         allow_delegation=False
     )
 
@@ -115,6 +112,6 @@ def get_optimisation_advisor():
         goal="Suggest strategic pivots and improvements based on the Analytics Specialist's findings.",
         backstory="You are a conversion rate optimization expert. You take data and turn it into actionable advice to squeeze every last drop of performance out of a campaign.",
         llm=get_llm(),
-        verbose=True,
+        verbose=False,
         allow_delegation=False
     )
